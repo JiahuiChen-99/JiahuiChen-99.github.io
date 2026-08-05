@@ -59,14 +59,20 @@
   }
 
   if (menuButton && navigation) {
-    const closeNavigation = () => {
+    const closeNavigation = (restoreFocus = false) => {
       navigation.classList.remove('is-open');
       menuButton.setAttribute('aria-expanded', 'false');
+      if (restoreFocus) {
+        menuButton.focus();
+      }
     };
 
     menuButton.addEventListener('click', () => {
       const open = navigation.classList.toggle('is-open');
       menuButton.setAttribute('aria-expanded', String(open));
+      if (open) {
+        navigation.querySelector('a[href]')?.focus();
+      }
     });
 
     navigation.addEventListener('click', (event) => {
@@ -77,8 +83,7 @@
 
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape' && navigation.classList.contains('is-open')) {
-        closeNavigation();
-        menuButton.focus();
+        closeNavigation(true);
       }
     });
 
@@ -88,7 +93,7 @@
         !navigation.contains(event.target) &&
         !menuButton.contains(event.target)
       ) {
-        closeNavigation();
+        closeNavigation(navigation.contains(document.activeElement));
       }
     });
   }
