@@ -1,6 +1,8 @@
 (() => {
   'use strict';
 
+  document.documentElement.classList.add('js');
+
   const storageKey = 'jiahui-site-language';
   const translated = document.querySelectorAll('[data-en][data-zh]');
   const switcher = document.querySelector('[data-language-toggle]');
@@ -53,6 +55,11 @@
   }
 
   if (menuButton && navigation) {
+    const closeNavigation = () => {
+      navigation.classList.remove('is-open');
+      menuButton.setAttribute('aria-expanded', 'false');
+    };
+
     menuButton.addEventListener('click', () => {
       const open = navigation.classList.toggle('is-open');
       menuButton.setAttribute('aria-expanded', String(open));
@@ -60,8 +67,24 @@
 
     navigation.addEventListener('click', (event) => {
       if (event.target.closest('a')) {
-        navigation.classList.remove('is-open');
-        menuButton.setAttribute('aria-expanded', 'false');
+        closeNavigation();
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && navigation.classList.contains('is-open')) {
+        closeNavigation();
+        menuButton.focus();
+      }
+    });
+
+    document.addEventListener('click', (event) => {
+      if (
+        navigation.classList.contains('is-open') &&
+        !navigation.contains(event.target) &&
+        !menuButton.contains(event.target)
+      ) {
+        closeNavigation();
       }
     });
   }
