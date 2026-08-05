@@ -1,5 +1,28 @@
 $ErrorActionPreference = 'Stop'
 
+function Remove-HtmlComments {
+    param([string]$Html)
+
+    return [regex]::Replace($Html, '<!--.*?-->', '', [System.Text.RegularExpressions.RegexOptions]::Singleline)
+}
+
+function Get-HtmlAttributeValues {
+    param(
+        [string]$Html,
+        [string]$AttributeName
+    )
+
+    $escapedName = [regex]::Escape($AttributeName)
+    $attributePattern = '(?i)(?<![A-Za-z0-9_:-])' + $escapedName + '\s*=\s*(["''])(.*?)\1'
+    $values = foreach ($tagMatch in [regex]::Matches($Html, '<[^>]+>')) {
+        foreach ($attributeMatch in [regex]::Matches($tagMatch.Value, $attributePattern)) {
+            $attributeMatch.Groups[2].Value
+        }
+    }
+
+    return @($values)
+}
+
 $siteRoot = Split-Path -Parent $PSScriptRoot
 $requiredFiles = @(
     'index.html'
@@ -22,41 +45,50 @@ $requiredPageLinks = @('index.html', 'about.html', 'research.html')
 $allHtml = ''
 
 foreach ($page in $htmlPages) {
-    $html = Get-Content -LiteralPath (Join-Path $siteRoot $page) -Raw
+    $html = Remove-HtmlComments (Get-Content -LiteralPath (Join-Path $siteRoot $page) -Raw)
     $allHtml += "`n$html"
+    $hrefValues = Get-HtmlAttributeValues $html 'href'
+    $srcValues = Get-HtmlAttributeValues $html 'src'
 
     foreach ($link in $requiredPageLinks) {
-        if ($html -notmatch ('href\s*=\s*["''](?:\./)?' + [regex]::Escape($link) + '(?:[#?][^"'']*)?["'']')) {
+        $linkPattern = '^(?:\./)?' + [regex]::Escape($link) + '(?:[#?].*)?$'
+        if (-not ($hrefValues | Where-Object { $_ -match $linkPattern })) {
             throw "$page does not link to $link"
         }
     }
 
-    if ($html -notmatch 'data-en\s*=\s*["''][^"'']+["'']') {
+    if (-not (Get-HtmlAttributeValues $html 'data-en' | Where-Object { $_.Length -gt 0 })) {
         throw "$page does not contain data-en content"
     }
-    if ($html -notmatch 'data-zh\s*=\s*["''][^"'']+["'']') {
+    if (-not (Get-HtmlAttributeValues $html 'data-zh' | Where-Object { $_.Length -gt 0 })) {
         throw "$page does not contain data-zh content"
     }
-    if ($html -notmatch 'href\s*=\s*["''](?:\./)?assets/css/styles\.css(?:\?[^"'']*)?["'']') {
+    if (-not ($hrefValues | Where-Object { $_ -match '^(?:\./)?assets/css/styles\.css(?:[?#].*)?$' })) {
         throw "$page does not load assets/css/styles.css"
     }
-    if ($html -notmatch 'src\s*=\s*["''](?:\./)?assets/js/site\.js(?:\?[^"'']*)?["'']') {
+    if (-not ($srcValues | Where-Object { $_ -match '^(?:\./)?assets/js/site\.js(?:[?#].*)?$' })) {
         throw "$page does not load assets/js/site.js"
     }
 }
 
-$siteWideContent = @(
-    @{ Value = 'tpFVbtoAAAAJ'; Label = 'Google Scholar user tpFVbtoAAAAJ' }
-    @{ Value = '0000-0003-0874-3194'; Label = 'ORCID 0000-0003-0874-3194' }
-)
+$allHrefValues = Get-HtmlAttributeValues $allHtml 'href'
 
-foreach ($requirement in $siteWideContent) {
-    if (-not $allHtml.Contains($requirement.Value)) {
-        throw "Site HTML does not contain $($requirement.Label)"
-    }
+if (-not ($allHrefValues | Where-Object {
+    $_ -match '^https://scholar\.google\.com/citations\?' -and
+    $_ -match '(?:\?|&(?:amp;)?)user=tpFVbtoAAAAJ(?:&(?:amp;)?|#|$)'
+})) {
+    throw 'Site HTML does not link to Google Scholar user tpFVbtoAAAAJ'
 }
 
-if ($allHtml -notmatch 'href\s*=\s*["''](?:\./)?Resume_Chenjiahui\.pdf(?:[#?][^"'']*)?["'']') {
+if (-not ($allHrefValues | Where-Object {
+    $_ -match '^https://orcid\.org/0000-0003-0874-3194/?(?:[?#].*)?$'
+})) {
+    throw 'Site HTML does not link to ORCID 0000-0003-0874-3194'
+}
+
+if (-not ($allHrefValues | Where-Object {
+    $_ -match '^(?:\./)?Resume_Chenjiahui\.pdf(?:[?#].*)?$'
+})) {
     throw 'Site HTML does not link to Resume_Chenjiahui.pdf'
 }
 
