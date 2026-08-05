@@ -5,6 +5,7 @@
 
   const storageKey = 'jiahui-site-language';
   const translated = document.querySelectorAll('[data-en][data-zh]');
+  const translatedAriaLabels = document.querySelectorAll('[data-aria-en][data-aria-zh]');
   const switcher = document.querySelector('[data-language-toggle]');
   const menuButton = document.querySelector('[data-menu-toggle]');
   const navigation = document.querySelector('[data-navigation]');
@@ -32,6 +33,9 @@
     document.documentElement.lang = next === 'zh' ? 'zh-CN' : 'en';
     translated.forEach((node) => {
       node.textContent = node.dataset[next];
+    });
+    translatedAriaLabels.forEach((node) => {
+      node.setAttribute('aria-label', node.dataset[next === 'zh' ? 'ariaZh' : 'ariaEn']);
     });
 
     if (document.body && document.body.dataset[titleKey]) {
