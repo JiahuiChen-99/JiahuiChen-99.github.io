@@ -48,13 +48,16 @@ foreach ($page in $htmlPages) {
 $siteWideContent = @(
     @{ Value = 'tpFVbtoAAAAJ'; Label = 'Google Scholar user tpFVbtoAAAAJ' }
     @{ Value = '0000-0003-0874-3194'; Label = 'ORCID 0000-0003-0874-3194' }
-    @{ Value = 'Resume_Chenjiahui.pdf'; Label = 'Resume_Chenjiahui.pdf link' }
 )
 
 foreach ($requirement in $siteWideContent) {
     if (-not $allHtml.Contains($requirement.Value)) {
         throw "Site HTML does not contain $($requirement.Label)"
     }
+}
+
+if ($allHtml -notmatch 'href\s*=\s*["''](?:\./)?Resume_Chenjiahui\.pdf(?:[#?][^"'']*)?["'']') {
+    throw 'Site HTML does not link to Resume_Chenjiahui.pdf'
 }
 
 Write-Output 'Site verification passed.'
