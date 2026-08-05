@@ -166,5 +166,6 @@ button { color: inherit; font: inherit; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
-  .reveal, .reveal.is-visible, .button:hover, .card:hover, .text-link:hover::after { opacity: 1; transform: none; }
+  .js .reveal, .reveal.is-visible, .button:hover, .card:hover, .text-link:hover::after { opacity: 1; transform: none; }
+  .js .reveal { transition: none !important; }
 }
