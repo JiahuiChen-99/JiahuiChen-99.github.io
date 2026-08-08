@@ -30,6 +30,7 @@ $requiredFiles = @(
     'research.html'
     'assets/css/styles.css'
     'assets/js/site.js'
+    'assets/images/jiahui-chen.jpg'
     'Resume_Chenjiahui.pdf'
 )
 
@@ -43,9 +44,11 @@ foreach ($relativePath in $requiredFiles) {
 $htmlPages = @('index.html', 'about.html', 'research.html')
 $requiredPageLinks = @('index.html', 'about.html', 'research.html')
 $allHtml = ''
+$cleanPages = @{}
 
 foreach ($page in $htmlPages) {
-    $html = Remove-HtmlComments (Get-Content -LiteralPath (Join-Path $siteRoot $page) -Raw)
+    $html = Remove-HtmlComments (Get-Content -LiteralPath (Join-Path $siteRoot $page) -Raw -Encoding UTF8)
+    $cleanPages[$page] = $html
     $allHtml += "`n$html"
     $hrefValues = Get-HtmlAttributeValues $html 'href'
     $srcValues = Get-HtmlAttributeValues $html 'src'
@@ -90,6 +93,55 @@ if (-not ($allHrefValues | Where-Object {
     $_ -match '^(?:\./)?Resume_Chenjiahui\.pdf(?:[?#].*)?$'
 })) {
     throw 'Site HTML does not link to Resume_Chenjiahui.pdf'
+}
+
+$correctChineseName = -join [char[]](0x9648, 0x4F73, 0x6167)
+$incorrectChineseName = -join [char[]](0x9648, 0x5609, 0x6167)
+
+$requiredFacts = @(
+    $correctChineseName
+    'chenjh99@bit.edu.cn'
+    'Duke University'
+    'Sanford School of Public Policy'
+    'assets/images/jiahui-chen.jpg'
+)
+foreach ($fact in $requiredFacts) {
+    if (-not $allHtml.Contains($fact)) {
+        throw "Missing refreshed fact: $fact"
+    }
+}
+
+$forbiddenFacts = @(
+    $incorrectChineseName
+    'Jiahui.chen@duke.edu'
+    '3120225853@bit.edu.cn'
+    'chenjiahuicjf@163.com'
+    '188-1178-7330'
+    '5 Zhongguancun South Street'
+    'Working paper'
+    'Under Review'
+    'Minor revision'
+)
+foreach ($fact in $forbiddenFacts) {
+    if ($allHtml.Contains($fact)) {
+        throw "Forbidden public content found: $fact"
+    }
+}
+
+$publishedTitles = @(
+    'Global public perceptions of climate change risks and their determinants'
+    'Empowering women substantially accelerates the household clean energy transition in China'
+    'Rural photovoltaic projects substantially prompt household energy transition'
+    'Household Energy Transition Improves Children'
+    'Weather, Travel Modes, and the Effectiveness of Driving Restriction Policies'
+    'Decoupling carbon emissions, economic growth, and health costs toward carbon neutrality'
+    'Public pension accelerates the household electrification'
+)
+$researchHtml = $cleanPages['research.html']
+foreach ($title in $publishedTitles) {
+    if (-not $researchHtml.Contains($title)) {
+        throw "Missing published title: $title"
+    }
 }
 
 Write-Output 'Site verification passed.'
