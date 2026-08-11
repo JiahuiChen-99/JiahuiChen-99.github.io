@@ -188,6 +188,16 @@ $styles = Get-Content -LiteralPath (Join-Path $siteRoot 'assets/css/styles.css')
 if ($styles -match '\.js\s+\.reveal') {
     throw 'Styles still hide content for scroll-triggered reveal'
 }
+
+$heroRule = [regex]::Match($styles, '(?m)^\.hero\s*\{(?<declarations>[^}]*)\}')
+if (-not $heroRule.Success -or $heroRule.Groups['declarations'].Value -notmatch 'min-height\s*:\s*auto') {
+    throw 'Inner-page hero must use automatic height to avoid excessive whitespace'
+}
+
+$friendlyHeroRule = [regex]::Match($styles, '(?m)^\.friendly-hero\s*\{(?<declarations>[^}]*)\}')
+if (-not $friendlyHeroRule.Success -or $friendlyHeroRule.Groups['declarations'].Value -notmatch 'min-height\s*:\s*calc\(100vh\s*-\s*6\.8rem\)') {
+    throw 'Homepage hero must retain its full-height layout independently'
+}
 $portraitFrameRule = [regex]::Match($styles, '(?s)\.portrait-frame\s*\{(?<declarations>.*?)\}')
 if (-not $portraitFrameRule.Success -or $portraitFrameRule.Groups['declarations'].Value -notmatch 'aspect-ratio\s*:\s*1\s*/\s*1') {
     throw 'Portrait frame must use a square aspect ratio'
