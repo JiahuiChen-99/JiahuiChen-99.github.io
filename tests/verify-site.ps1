@@ -129,6 +129,7 @@ foreach ($fact in $forbiddenFacts) {
 }
 
 $publishedTitles = @(
+    'Solar photovoltaic adoption and poverty alleviation: Experience from rural China'
     'Global public perceptions of climate change risks and their determinants'
     'Empowering women substantially accelerates the household clean energy transition in China'
     'Rural photovoltaic projects substantially prompt household energy transition'
@@ -144,7 +145,13 @@ foreach ($title in $publishedTitles) {
     }
 }
 
-$forbiddenResearchContent = @('projects-title', 'project-list', 'project-item', 'Representative projects')
+if (-not ((Get-HtmlAttributeValues $researchHtml 'href') | Where-Object {
+    $_ -match '^https://doi\.org/10\.1017/S1355770X26100461/?(?:[?#].*)?$'
+})) {
+    throw 'Research page does not link to DOI 10.1017/S1355770X26100461'
+}
+
+$forbiddenResearchContent = @('projects-title', 'project-list', 'project-item', 'Representative projects', 'representative projects')
 foreach ($marker in $forbiddenResearchContent) {
     if ($researchHtml.Contains($marker)) {
         throw "Research page still contains representative projects: $marker"
