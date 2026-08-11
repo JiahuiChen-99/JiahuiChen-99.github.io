@@ -152,16 +152,37 @@ foreach ($sectionMarker in $forbiddenHomeSections) {
     }
 }
 
+if ($homeHtml.Contains('class="cn-name"')) {
+    throw 'Homepage title still contains the Chinese name subtitle'
+}
+
+$heroTitle = [regex]::Match($homeHtml, '(?s)<h1\s+id="hero-title"[^>]*>(?<content>.*?)</h1>')
+if (-not $heroTitle.Success -or $heroTitle.Groups['content'].Value.Contains($correctChineseName)) {
+    throw 'Homepage hero title must show Jiahui Chen without the Chinese name'
+}
+
 $styles = Get-Content -LiteralPath (Join-Path $siteRoot 'assets/css/styles.css') -Raw -Encoding UTF8
+$portraitFrameRule = [regex]::Match($styles, '(?s)\.portrait-frame\s*\{(?<declarations>.*?)\}')
+if (-not $portraitFrameRule.Success -or $portraitFrameRule.Groups['declarations'].Value -notmatch 'aspect-ratio\s*:\s*1\s*/\s*1') {
+    throw 'Portrait frame must use a square aspect ratio'
+}
 $portraitRule = [regex]::Match($styles, '(?s)\.portrait-frame img\s*\{(?<declarations>.*?)\}')
 if (-not $portraitRule.Success) {
     throw 'Missing .portrait-frame img style rule'
 }
-if ($portraitRule.Groups['declarations'].Value -notmatch 'height\s*:\s*auto') {
-    throw 'Portrait must preserve its intrinsic height with height: auto'
+if ($portraitRule.Groups['declarations'].Value -notmatch 'height\s*:\s*100%') {
+    throw 'Portrait image must fill the circular frame height'
 }
-if ($portraitRule.Groups['declarations'].Value -match 'aspect-ratio\s*:') {
-    throw 'Portrait must not use a forced aspect-ratio'
+if ($portraitRule.Groups['declarations'].Value -notmatch 'border-radius\s*:\s*50%') {
+    throw 'Portrait image must be circular'
+}
+if ($portraitRule.Groups['declarations'].Value -notmatch 'object-fit\s*:\s*cover') {
+    throw 'Portrait image must preserve its proportions with object-fit: cover'
+}
+
+$displayTitleRule = [regex]::Match($styles, '(?s)\.display-title\s*\{(?<declarations>.*?)\}')
+if (-not $displayTitleRule.Success -or $displayTitleRule.Groups['declarations'].Value -notmatch 'font-family\s*:\s*var\(--body\)') {
+    throw 'Homepage display title must use the simple body typeface'
 }
 
 Write-Output 'Site verification passed.'
