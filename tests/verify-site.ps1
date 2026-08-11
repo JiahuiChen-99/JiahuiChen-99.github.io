@@ -144,4 +144,24 @@ foreach ($title in $publishedTitles) {
     }
 }
 
+$homeHtml = $cleanPages['index.html']
+$forbiddenHomeSections = @('id="focus-title"', 'id="recent-title"', 'home-theme-grid')
+foreach ($sectionMarker in $forbiddenHomeSections) {
+    if ($homeHtml.Contains($sectionMarker)) {
+        throw "Homepage still contains research content: $sectionMarker"
+    }
+}
+
+$styles = Get-Content -LiteralPath (Join-Path $siteRoot 'assets/css/styles.css') -Raw -Encoding UTF8
+$portraitRule = [regex]::Match($styles, '(?s)\.portrait-frame img\s*\{(?<declarations>.*?)\}')
+if (-not $portraitRule.Success) {
+    throw 'Missing .portrait-frame img style rule'
+}
+if ($portraitRule.Groups['declarations'].Value -notmatch 'height\s*:\s*auto') {
+    throw 'Portrait must preserve its intrinsic height with height: auto'
+}
+if ($portraitRule.Groups['declarations'].Value -match 'aspect-ratio\s*:') {
+    throw 'Portrait must not use a forced aspect-ratio'
+}
+
 Write-Output 'Site verification passed.'
