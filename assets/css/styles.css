@@ -137,24 +137,16 @@ button { color: inherit; font: inherit; }
 .timeline-content h3 { margin: 0 0 .45rem; font: 620 clamp(1.35rem, 2.6vw, 2rem)/1.15 var(--display); }
 .timeline-content p { max-width: 48rem; margin: .35rem 0 0; color: var(--muted); }
 
-.publication-list, .project-list { display: grid; gap: .85rem; }
+.publication-list { display: grid; gap: .85rem; }
 .publication { display: grid; grid-template-columns: minmax(5rem, .15fr) 1fr auto; gap: clamp(1.1rem, 3vw, 2.5rem); align-items: start; padding: 1.65rem 1.75rem; border: 1px solid rgba(33, 74, 59, .1); border-radius: 1rem; background: rgba(255, 254, 249, .72); transition: border-color .2s ease, transform .2s ease, background .2s ease; }
 .publication:hover { border-color: rgba(33, 74, 59, .25); background: var(--white); transform: translateX(.25rem); }
 .publication h3 { max-width: 54ch; margin: 0 0 .55rem; font: 620 clamp(1.2rem, 2.2vw, 1.6rem)/1.25 var(--display); }
 .publication p { margin: 0; color: var(--muted); font-size: .9rem; }
 .author-self { color: var(--forest-deep); font-weight: 800; }
-.project-item { padding: 1.4rem 1.55rem; border-left: .35rem solid var(--green); border-radius: 0 .9rem .9rem 0; background: var(--sage-light); }
-.project-item h3 { margin: 0 0 .45rem; font: 620 1.25rem/1.25 var(--display); }
-.project-item p { margin: 0; color: var(--muted); }
-
 .site-footer { display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: end; width: min(calc(100% - 2 * var(--gutter)), var(--max)); margin: 0 auto; padding: clamp(3rem, 7vw, 5rem) 0; border-top: 1px solid var(--line); }
 .site-footer p { max-width: 35rem; margin: 0; color: var(--muted); font-size: .85rem; }
 .footer-links { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: flex-end; }
 .footer-links a { font-size: .74rem; font-weight: 750; letter-spacing: .06em; }
-
-.reveal { opacity: 1; transform: none; }
-.js .reveal { opacity: 0; transform: translateY(1.25rem); transition: opacity .65s ease, transform .65s cubic-bezier(.2,.7,.2,1); }
-.reveal.is-visible { opacity: 1; transform: none; }
 
 @media (max-width: 760px) {
   :root { --gutter: 1.1rem; --section-space: 4.25rem; }
@@ -202,6 +194,5 @@ button { color: inherit; font: inherit; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
-  .js .reveal, .reveal.is-visible, .button:hover, .card:hover, .publication:hover, .text-link:hover::after { opacity: 1; transform: none; }
-  .js .reveal { transition: none !important; }
+  .button:hover, .card:hover, .publication:hover, .text-link:hover::after { opacity: 1; transform: none; }
 }

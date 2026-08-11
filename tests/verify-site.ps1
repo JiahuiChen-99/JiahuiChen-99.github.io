@@ -144,6 +144,22 @@ foreach ($title in $publishedTitles) {
     }
 }
 
+$forbiddenResearchContent = @('projects-title', 'project-list', 'project-item', 'Representative projects')
+foreach ($marker in $forbiddenResearchContent) {
+    if ($researchHtml.Contains($marker)) {
+        throw "Research page still contains representative projects: $marker"
+    }
+}
+
+if ($allHtml -match '(?:^|\s)reveal(?:\s|\x22|$)') {
+    throw 'Pages still contain scroll-triggered reveal classes'
+}
+
+$siteScript = Get-Content -LiteralPath (Join-Path $siteRoot 'assets/js/site.js') -Raw -Encoding UTF8
+if ($siteScript.Contains('IntersectionObserver')) {
+    throw 'Site script still contains scroll-triggered reveal logic'
+}
+
 $homeHtml = $cleanPages['index.html']
 $forbiddenHomeSections = @('id="focus-title"', 'id="recent-title"', 'home-theme-grid')
 foreach ($sectionMarker in $forbiddenHomeSections) {
@@ -162,6 +178,9 @@ if (-not $heroTitle.Success -or $heroTitle.Groups['content'].Value.Contains($cor
 }
 
 $styles = Get-Content -LiteralPath (Join-Path $siteRoot 'assets/css/styles.css') -Raw -Encoding UTF8
+if ($styles -match '\.js\s+\.reveal') {
+    throw 'Styles still hide content for scroll-triggered reveal'
+}
 $portraitFrameRule = [regex]::Match($styles, '(?s)\.portrait-frame\s*\{(?<declarations>.*?)\}')
 if (-not $portraitFrameRule.Success -or $portraitFrameRule.Groups['declarations'].Value -notmatch 'aspect-ratio\s*:\s*1\s*/\s*1') {
     throw 'Portrait frame must use a square aspect ratio'
