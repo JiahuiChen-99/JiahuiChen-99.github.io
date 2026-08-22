@@ -76,6 +76,10 @@ foreach ($page in $htmlPages) {
 
 $allHrefValues = Get-HtmlAttributeValues $allHtml 'href'
 
+if ($allHtml.Contains('fonts.googleapis.com') -or $allHtml.Contains('fonts.gstatic.com')) {
+    throw 'Academic design must not load external or decorative web fonts'
+}
+
 if (-not ($allHrefValues | Where-Object {
     $_ -match '^https://scholar\.google\.com/citations\?' -and
     $_ -match '(?:\?|&(?:amp;)?)user=tpFVbtoAAAAJ(?:&(?:amp;)?|#|$)'
@@ -187,6 +191,30 @@ if (-not $heroTitle.Success -or $heroTitle.Groups['content'].Value.Contains($cor
 $styles = Get-Content -LiteralPath (Join-Path $siteRoot 'assets/css/styles.css') -Raw -Encoding UTF8
 if ($styles -match '\.js\s+\.reveal') {
     throw 'Styles still hide content for scroll-triggered reveal'
+}
+
+$forbiddenVisualPatterns = @(
+    'Fraunces'
+    'Noto Serif SC'
+    'radial-gradient'
+    'linear-gradient'
+    'background-image'
+    'border-radius: 999px'
+)
+foreach ($pattern in $forbiddenVisualPatterns) {
+    if ($styles.Contains($pattern)) {
+        throw "Academic design still contains decorative styling: $pattern"
+    }
+}
+
+if ($styles -notmatch '--body:\s*-apple-system,\s*BlinkMacSystemFont') {
+    throw 'Academic design must use a local system sans-serif font stack'
+}
+if ($styles -notmatch '--display:\s*var\(--body\)') {
+    throw 'Academic design must use the same restrained sans-serif family for headings'
+}
+if ($styles -notmatch '--title-size:\s*clamp\([^;]*2\.65rem') {
+    throw 'Academic design must cap major desktop headings at 2.65rem'
 }
 
 $heroRule = [regex]::Match($styles, '(?m)^\.hero\s*\{(?<declarations>[^}]*)\}')
