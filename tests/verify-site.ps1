@@ -137,7 +137,7 @@ $publishedTitles = @(
     'Global public perceptions of climate change risks and their determinants'
     'Empowering women substantially accelerates the household clean energy transition in China'
     'Rural photovoltaic projects substantially prompt household energy transition'
-    'Household Energy Transition Improves Children'
+    'Extracurricular Participation under Household Energy Transition'
     'Weather, Travel Modes, and the Effectiveness of Driving Restriction Policies'
     'Decoupling carbon emissions, economic growth, and health costs toward carbon neutrality'
     'Public pension accelerates the household electrification'
@@ -217,14 +217,20 @@ if ($styles -notmatch '--title-size:\s*clamp\([^;]*2\.65rem') {
     throw 'Academic design must cap major desktop headings at 2.65rem'
 }
 
-$heroRule = [regex]::Match($styles, '(?m)^\.hero\s*\{(?<declarations>[^}]*)\}')
-if (-not $heroRule.Success -or $heroRule.Groups['declarations'].Value -notmatch 'min-height\s*:\s*auto') {
-    throw 'Inner-page hero must use automatic height to avoid excessive whitespace'
+$heroRule = [regex]::Match($styles, '(?m)^\.page-title\s*\{(?<declarations>[^}]*)\}')
+if (-not $heroRule.Success -or $heroRule.Groups['declarations'].Value -notmatch 'padding-bottom\s*:\s*2\.6rem') {
+    throw 'Inner-page title must use compact natural spacing'
 }
 
-$friendlyHeroRule = [regex]::Match($styles, '(?m)^\.friendly-hero\s*\{(?<declarations>[^}]*)\}')
-if (-not $friendlyHeroRule.Success -or $friendlyHeroRule.Groups['declarations'].Value -notmatch 'min-height\s*:\s*calc\(100vh\s*-\s*6\.8rem\)') {
-    throw 'Homepage hero must retain its full-height layout independently'
+$friendlyHeroRule = [regex]::Match($styles, '(?m)^\.profile-intro\s*\{(?<declarations>[^}]*)\}')
+if (-not $friendlyHeroRule.Success -or $friendlyHeroRule.Groups['declarations'].Value -notmatch 'position\s*:\s*relative') {
+    throw 'Homepage must use the compact profile-intro layout'
+}
+if ($styles -match 'min-height\s*:\s*calc\(100vh') {
+    throw 'Minimalist pages must not force full-viewport sections'
+}
+if ($styles.Contains('.button') -or $styles.Contains('.card-grid')) {
+    throw 'Minimalist design must use plain links and lists instead of buttons or cards'
 }
 $portraitFrameRule = [regex]::Match($styles, '(?s)\.portrait-frame\s*\{(?<declarations>.*?)\}')
 if (-not $portraitFrameRule.Success -or $portraitFrameRule.Groups['declarations'].Value -notmatch 'aspect-ratio\s*:\s*1\s*/\s*1') {
@@ -244,9 +250,13 @@ if ($portraitRule.Groups['declarations'].Value -notmatch 'object-fit\s*:\s*cover
     throw 'Portrait image must preserve its proportions with object-fit: cover'
 }
 
-$displayTitleRule = [regex]::Match($styles, '(?s)\.display-title\s*\{(?<declarations>.*?)\}')
+$displayTitleRule = [regex]::Match($styles, '(?s)\.profile-name\s*\{(?<declarations>.*?)\}')
 if (-not $displayTitleRule.Success -or $displayTitleRule.Groups['declarations'].Value -notmatch 'font-family\s*:\s*var\(--body\)') {
     throw 'Homepage display title must use the simple body typeface'
+}
+
+if (-not $homeHtml.Contains('class="profile-links"')) {
+    throw 'Homepage must present academic links as a simple inline list'
 }
 
 Write-Output 'Site verification passed.'
