@@ -142,6 +142,17 @@ $publishedTitles = @(
     'Public pension accelerates the household electrification'
 )
 $researchHtml = $cleanPages['research.html']
+$requiredPublicationMetadata = @(
+    '<i>Environment and Development Economics</i>, 2026, 1–23.'
+    '<i>International Journal of Educational Development</i>, 120, 103486.'
+    '<i>Transportation</i>, 1–26.'
+)
+foreach ($metadata in $requiredPublicationMetadata) {
+    if (-not $researchHtml.Contains($metadata)) {
+        throw "Research page is missing publication metadata: $metadata"
+    }
+}
+
 foreach ($title in $publishedTitles) {
     if (-not $researchHtml.Contains($title)) {
         throw "Missing published title: $title"
@@ -197,18 +208,40 @@ foreach ($section in $requiredMergedSections) {
 $requiredHomeContent = @(
     'data-en="About Me"'
     'Center for Energy and Environmental Policy Research (CEEP)'
+    'I am a PhD candidate at the Center for Energy and Environmental Policy Research (CEEP), Beijing Institute of Technology (BIT) since 2021'
     'economic and distributional impacts of'
-    'household energy transitions'
+    'energy transitions and climate change'
     'clean energy access in promoting development and energy justice'
     'vulnerable groups in developing countries, especially women and children'
     'I am on the job market in 2027.'
     'Upcoming presentations and trips'
     'AEA Annual Meeting in Washington, D.C.'
     'January 2027'
+    'class="portrait-meta"'
+    'She/Her'
+    'https://www.linkedin.com/in/jiahui-chen-193418387/'
+    'https://scholar.google.com/citations?user=-TFrj1UAAAAJ&amp;hl=en&amp;oi=ao'
+    'Site last updated 2026-8-28'
+    'Visiting PhD student in Energy and Environmental Economics'
+    'Sustainable Development'
+    'Energy, Sustainability and Society'
+    'Clean Energy Science and Technology'
 )
 foreach ($content in $requiredHomeContent) {
     if (-not $homeHtml.Contains($content)) {
         throw "Homepage is missing approved content: $content"
+    }
+}
+
+$forbiddenUpdatedHomeContent = @(
+    'I have been a PhD candidate'
+    'household energy transitions'
+    'Joint doctoral training in Energy and Environmental Economics'
+    'Energy Economics, Energy, World Development'
+)
+foreach ($content in $forbiddenUpdatedHomeContent) {
+    if ($homeHtml.Contains($content)) {
+        throw "Homepage still contains superseded content: $content"
     }
 }
 
