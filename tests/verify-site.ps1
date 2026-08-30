@@ -142,6 +142,9 @@ $publishedTitles = @(
     'Public pension accelerates the household electrification'
 )
 $researchHtml = $cleanPages['research.html']
+if (-not $researchHtml.Contains('Empowering women substantially accelerates the household clean energy transition in China. <i>Energy Policy</i>, 187, 114048. (ESI Highly Cited, 1%)')) {
+    throw 'Research page is missing the ESI Highly Cited annotation for the women empowerment article'
+}
 $enDash = [char]0x2013
 $requiredPublicationMetadata = @(
     ('<i>Environment and Development Economics</i>, 2026, 1' + $enDash + '23.')
