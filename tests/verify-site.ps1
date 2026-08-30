@@ -197,7 +197,7 @@ $requiredMergedSections = @(
     'id="upcoming-title"'
     'id="honors-title"'
     'id="service-title"'
-    'China Scholarship Council Scholarship'
+    'China Scholarship Council (CSC) Scholarship'
     'Reviewer for the AERE Summer Conference'
 )
 foreach ($section in $requiredMergedSections) {
@@ -219,11 +219,19 @@ $requiredHomeContent = @(
     'AEA Annual Meeting in Washington, D.C.'
     'January 2027'
     'class="portrait-meta"'
+    'class="portrait-meta-icon portrait-meta-icon-building"'
+    'class="portrait-meta-icon portrait-meta-icon-email"'
+    'class="portrait-meta-icon portrait-meta-icon-linkedin"'
+    'class="portrait-meta-institution"'
     'She/Her'
     'https://www.linkedin.com/in/jiahui-chen-193418387/'
     'https://scholar.google.com/citations?user=-TFrj1UAAAAJ&amp;hl=en&amp;oi=ao'
     'Site last updated 2026-8-28'
     'Visiting PhD student in Energy and Environmental Economics'
+    'https://sanford.duke.edu/profile/alexander-pfaff/'
+    'Supervisor: Professor Alex Pfaff.'
+    'National Scholarship, Ministry of Education of China'
+    '2023, 2026'
     'Sustainable Development'
     'Energy, Sustainability and Society'
     'Clean Energy Science and Technology'
@@ -239,6 +247,11 @@ $forbiddenUpdatedHomeContent = @(
     'household energy transitions'
     'Joint doctoral training in Energy and Environmental Economics'
     'Energy Economics, Energy, World Development'
+    '<span class="portrait-meta-icon" aria-hidden="true">▦</span>'
+    '<span class="portrait-meta-icon" aria-hidden="true">✉</span>'
+    '>in</span><a href="https://www.linkedin.com/'
+    '2022, 2026'
+    'China Scholarship Council Scholarship'
 )
 foreach ($content in $forbiddenUpdatedHomeContent) {
     if ($homeHtml.Contains($content)) {
