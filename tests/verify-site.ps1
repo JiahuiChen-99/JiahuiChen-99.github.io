@@ -26,7 +26,6 @@ function Get-HtmlAttributeValues {
 $siteRoot = Split-Path -Parent $PSScriptRoot
 $requiredFiles = @(
     'index.html'
-    'about.html'
     'research.html'
     'assets/css/styles.css'
     'assets/js/site.js'
@@ -41,8 +40,8 @@ foreach ($relativePath in $requiredFiles) {
     }
 }
 
-$htmlPages = @('index.html', 'about.html', 'research.html')
-$requiredPageLinks = @('index.html', 'about.html', 'research.html')
+$htmlPages = @('index.html', 'research.html')
+$requiredPageLinks = @('index.html', 'research.html')
 $allHtml = ''
 $cleanPages = @{}
 
@@ -172,6 +171,29 @@ if ($siteScript.Contains('IntersectionObserver')) {
 }
 
 $homeHtml = $cleanPages['index.html']
+$aboutPath = Join-Path $siteRoot 'about.html'
+if (Test-Path -LiteralPath $aboutPath) {
+    throw 'Standalone about.html must be removed after profile consolidation'
+}
+
+if ($allHtml.Contains('about.html')) {
+    throw 'Site navigation must not link to removed about.html'
+}
+
+$requiredMergedSections = @(
+    'id="education-title"'
+    'id="upcoming-title"'
+    'id="honors-title"'
+    'id="service-title"'
+    'China Scholarship Council Scholarship'
+    'Reviewer for the AERE Summer Conference'
+)
+foreach ($section in $requiredMergedSections) {
+    if (-not $homeHtml.Contains($section)) {
+        throw "Homepage is missing merged About content: $section"
+    }
+}
+
 $requiredHomeContent = @(
     'data-en="About Me"'
     'Center for Energy and Environmental Policy Research (CEEP)'
