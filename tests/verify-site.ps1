@@ -142,6 +142,24 @@ $publishedTitles = @(
     'Public pension accelerates the household electrification'
 )
 $researchHtml = $cleanPages['research.html']
+$authorPriorityTitles = @(
+    'Solar photovoltaic adoption and poverty alleviation'
+    'Global public perceptions of climate change risks'
+    'Empowering women substantially accelerates the household clean energy transition'
+    'Extracurricular Participation under Household Energy Transition'
+    'Rural photovoltaic projects substantially prompt household energy transition'
+    'Public pension accelerates the household electrification'
+    'Weather, Travel Modes, and the Effectiveness of Driving Restriction Policies'
+    'Decoupling carbon emissions, economic growth, and health costs'
+)
+$previousPublicationIndex = -1
+foreach ($title in $authorPriorityTitles) {
+    $publicationIndex = $researchHtml.IndexOf($title)
+    if ($publicationIndex -le $previousPublicationIndex) {
+        throw 'Publications are not ordered by author priority'
+    }
+    $previousPublicationIndex = $publicationIndex
+}
 if (-not $researchHtml.Contains('Empowering women substantially accelerates the household clean energy transition in China. <i>Energy Policy</i>, 187, 114048. (ESI Highly Cited, 1%)')) {
     throw 'Research page is missing the ESI Highly Cited annotation for the women empowerment article'
 }
