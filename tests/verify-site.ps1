@@ -172,6 +172,21 @@ if ($siteScript.Contains('IntersectionObserver')) {
 }
 
 $homeHtml = $cleanPages['index.html']
+$requiredHomeContent = @(
+    'data-en="About Me"'
+    'Center for Energy and Environmental Policy Research (CEEP)'
+    'empirical research about household energy transitions'
+    'I am on the job market in 2027.'
+    'Upcoming presentations and trips'
+    'AEA Annual Meeting in Washington, D.C.'
+    'January 2027'
+)
+foreach ($content in $requiredHomeContent) {
+    if (-not $homeHtml.Contains($content)) {
+        throw "Homepage is missing approved content: $content"
+    }
+}
+
 $forbiddenHomeSections = @('id="focus-title"', 'id="recent-title"', 'home-theme-grid')
 foreach ($sectionMarker in $forbiddenHomeSections) {
     if ($homeHtml.Contains($sectionMarker)) {
