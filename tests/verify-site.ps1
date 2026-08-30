@@ -142,10 +142,11 @@ $publishedTitles = @(
     'Public pension accelerates the household electrification'
 )
 $researchHtml = $cleanPages['research.html']
+$enDash = [char]0x2013
 $requiredPublicationMetadata = @(
-    '<i>Environment and Development Economics</i>, 2026, 1–23.'
+    ('<i>Environment and Development Economics</i>, 2026, 1' + $enDash + '23.')
     '<i>International Journal of Educational Development</i>, 120, 103486.'
-    '<i>Transportation</i>, 1–26.'
+    ('<i>Transportation</i>, 1' + $enDash + '26.')
 )
 foreach ($metadata in $requiredPublicationMetadata) {
     if (-not $researchHtml.Contains($metadata)) {
