@@ -175,7 +175,10 @@ $homeHtml = $cleanPages['index.html']
 $requiredHomeContent = @(
     'data-en="About Me"'
     'Center for Energy and Environmental Policy Research (CEEP)'
-    'empirical research about household energy transitions'
+    'economic and distributional impacts of'
+    'household energy transitions'
+    'clean energy access in promoting development and energy justice'
+    'vulnerable groups in developing countries, especially women and children'
     'I am on the job market in 2027.'
     'Upcoming presentations and trips'
     'AEA Annual Meeting in Washington, D.C.'
